@@ -1,0 +1,40 @@
+{
+  "name": "@mtourj/react-native-validated-form",
+  "version": "1.0.0",
+  "description": "A form validation library for React Native",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rm -rf dist && tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-native": ">=0.74"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mtourj/react-native-validated-form.git"
+  },
+  "keywords": [
+    "react-native",
+    "form",
+    "validation",
+    "typescript"
+  ],
+  "author": "Mohammad Tourjoman",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mtourj/react-native-validated-form/issues"
+  },
+  "homepage": "https://github.com/mtourj/react-native-validated-form#readme",
+  "devDependencies": {
+    "@types/react": "^19.1.0",
+    "@types/react-native": "^0.72.8",
+    "typescript": "^5.8.2"
+  }
+}

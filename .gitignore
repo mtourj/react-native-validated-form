@@ -1,0 +1,53 @@
+# Dependencies
+node_modules/
+
+# Build
+dist/
+lib/
+*.tsbuildinfo
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Testing
+coverage/
+
+# npm/yarn
+.npm
+.yarn-integrity
+yarn.lock
+package-lock.json
+
+# Misc
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.* 

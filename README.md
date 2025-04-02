@@ -1,6 +1,6 @@
 # React Native Validated Form
 
-A flexible, lightweight, and easy-to-use form validation library for React Native applications.
+A flexible, lightweight, and easy-to-use form validation library for React Native applications. Built to work on iOS, Android and Web.
 
 ## Installation
 

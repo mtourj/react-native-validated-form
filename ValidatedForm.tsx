@@ -14,6 +14,7 @@ import {
 import useBufferedState from "./hooks/useBufferedState";
 import { ScrollableComponent } from "./types";
 import { ScrollView } from "react-native";
+import { getScrollableNode, scrollTo } from "./utils";
 
 interface IValidatedFormProps {
   /** If set, ValidatedForm will not automatically validate fields when their state is updated. Default is `false` */
@@ -396,8 +397,9 @@ export const useFormValidationContext = (
   const scrollToInvalidFields = useCallback(
     function () {
       const _scrollView = _internal_scrollViewRef?.current;
+      const scrollableNode = getScrollableNode(_scrollView as any);
 
-      if (!_scrollView) return;
+      if (!scrollableNode) return;
 
       let shouldScroll = false,
         shouldScrollToOffset: number | undefined;
@@ -424,21 +426,11 @@ export const useFormValidationContext = (
         // Add padding to scroll position
         shouldScrollToOffset = Math.max(shouldScrollToOffset - extraHeight, 0);
 
-        //   KeyboardAwareScrollView & ScrollView have different method names & arguments
-        if ((_scrollView as ScrollView)?.scrollTo) {
-          (_scrollView as ScrollView).scrollTo({
-            y: shouldScrollToOffset,
-            animated: true,
-          });
-        } else if (
-          (_scrollView as ScrollableComponent<any, any>)?.scrollToPosition
-        ) {
-          (_scrollView as ScrollableComponent<any, any>).scrollToPosition(
-            0,
-            shouldScrollToOffset,
-            true
-          );
-        }
+        // Use the scrollTo utility function
+        scrollTo(scrollableNode, {
+          y: shouldScrollToOffset,
+          animated: true,
+        });
       }
     },
     [_internal_scrollViewRef, extraHeight, state.fields]

@@ -12,6 +12,7 @@ yarn add @mtourj/react-native-validated-form
 
 ## Key Features
 
+- ✨ **Declarative API**: Define validation rules and behavior directly in your JSX
 - 🔍 **Automatic Validation**: Validates form fields as values change
 - 📜 **Auto-Scrolling**: Scrolls to the first invalid field when form validation fails
 - 🧩 **Reusable Components**: Includes `ValidatedTextInput` and `ValidatedAny` for different field types

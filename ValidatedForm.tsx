@@ -345,7 +345,7 @@ export type UseFormValidationContextReturns = {
   resetValidations: () => void;
   /** Use for dynamic forms. Makes sure correct y-offset measurement
    * for fields added after scrolling */
-  onScroll: (e: NativeSyntheticEvent<NativeScrollEvent>) => void;
+  onScroll: (e: ScrollEvent) => void;
   /** Returns all fields in form */
   fields: Partial<ValidatedFormFields>;
 };

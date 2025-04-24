@@ -21,6 +21,11 @@ interface IValidatedFormProps {
   disableValidateFieldOnChange?: boolean;
 }
 
+export type ScrollEvent = Pick<
+  NativeSyntheticEvent<Pick<NativeScrollEvent, "contentOffset">>,
+  "nativeEvent"
+>;
+
 export type ValidatedFormFields = {
   [fieldName: string]: ValidatedFieldState | undefined;
 };
@@ -459,7 +464,7 @@ export const useFormValidationContext = (
   };
 
   const onScroll = useCallback(
-    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    (e: ScrollEvent) => {
       const { contentOffset } = e.nativeEvent;
 
       _internal_setScrollY(contentOffset.y);

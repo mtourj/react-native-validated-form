@@ -60,6 +60,8 @@ export type FormContext = {
       | React.RefObject<ScrollView | ScrollableComponent<any, any> | undefined>
       | undefined
   ) => void;
+  readonly _internal_setExtraScrollHeight: (value: number) => void;
+  readonly _internal_extraScrollHeight: number;
   readonly _internal_setScrollY: (value: number | undefined) => void;
   readonly _internal_scrollViewRef:
     | React.RefObject<ScrollView | ScrollableComponent<any, any> | undefined>
@@ -104,6 +106,7 @@ export default function ValidatedForm(
     ScrollView | ScrollableComponent<any, any> | undefined
   >(undefined);
 
+  const [extraScrollHeight, setExtraScrollHeight] = useState(0);
   const [scrollViewNodeHandle, _setScrollViewNodeHandle] = useState<number>();
   const nodeHandleChangeListenersRef = useRef<
     ((nodeHandle: number | undefined) => void)[]
@@ -322,6 +325,8 @@ export default function ValidatedForm(
         updateFieldOffsetY,
         _internal_setScrollY: setScrollY,
         _internal_setScrollViewRef: setScrollViewRef,
+        _internal_setExtraScrollHeight: setExtraScrollHeight,
+        _internal_extraScrollHeight: extraScrollHeight,
         _internal_scrollViewNodeHandle: scrollViewNodeHandle,
         _internal_scrollViewRef: scrollViewRef,
         _internal_disableValidateFieldOnChange:
@@ -359,7 +364,7 @@ export const useFormValidationContext = (
     ScrollView | ScrollableComponent<any, any> | undefined
   >,
   /** Default is `40` */
-  extraHeight = 40
+  extraScrollHeightHeight = 40
 ): UseFormValidationContextReturns => {
   const _context = useContext(ctx);
 
@@ -372,6 +377,8 @@ export const useFormValidationContext = (
   const {
     state,
     validateForm: _validate,
+    _internal_setExtraScrollHeight,
+    _internal_extraScrollHeight,
     _internal_scrollViewRef,
     _internal_setScrollViewRef,
     _internal_setScrollY,
@@ -388,6 +395,12 @@ export const useFormValidationContext = (
       mounted.current = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (typeof extraScrollHeightHeight === "number" && mounted.current) {
+      _internal_setExtraScrollHeight(extraScrollHeightHeight);
+    }
+  }, [extraScrollHeightHeight, _internal_setExtraScrollHeight]);
 
   /** This side effect handles updating scrollViewNodeHandle */
   useEffect(() => {
@@ -429,7 +442,10 @@ export const useFormValidationContext = (
 
       if (shouldScroll && typeof shouldScrollToOffset === "number") {
         // Add padding to scroll position
-        shouldScrollToOffset = Math.max(shouldScrollToOffset - extraHeight, 0);
+        shouldScrollToOffset = Math.max(
+          shouldScrollToOffset - _internal_extraScrollHeight,
+          0
+        );
 
         // Use the scrollTo utility function
         scrollTo(scrollableNode, {
@@ -438,7 +454,7 @@ export const useFormValidationContext = (
         });
       }
     },
-    [_internal_scrollViewRef, extraHeight, state.fields]
+    [_internal_scrollViewRef, _internal_extraScrollHeight, state.fields]
   );
 
   useEffect(() => {

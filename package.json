@@ -1,6 +1,6 @@
 {
   "name": "@mtourj/react-native-validated-form",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A form validation library for React Native",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

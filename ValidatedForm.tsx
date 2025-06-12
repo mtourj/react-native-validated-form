@@ -6,7 +6,6 @@ import React, {
   useState,
 } from "react";
 import {
-  findNodeHandle,
   NativeScrollEvent,
   NativeSyntheticEvent,
   Platform,
@@ -66,7 +65,7 @@ export type FormContext = {
   readonly _internal_scrollViewRef:
     | React.RefObject<ScrollView | ScrollableComponent<any, any> | undefined>
     | undefined;
-  readonly _internal_scrollViewNodeHandle: number | undefined;
+  readonly _internal_scrollView: ScrollView | ScrollableComponent<any, any> | undefined;
   readonly _internal_disableValidateFieldOnChange: boolean | undefined;
 };
 
@@ -101,56 +100,26 @@ export default function ValidatedForm(
   }, [setValidatorState]);
 
   const scrollYRef = useRef<number | undefined>(undefined);
-
-  const scrollViewRef = useRef<
-    ScrollView | ScrollableComponent<any, any> | undefined
-  >(undefined);
-
+  const scrollViewRef = useRef<ScrollView | ScrollableComponent<any, any> | undefined>(undefined);
   const [extraScrollHeight, setExtraScrollHeight] = useState(0);
-  const [scrollViewNodeHandle, _setScrollViewNodeHandle] = useState<number>();
-  const nodeHandleChangeListenersRef = useRef<
-    ((nodeHandle: number | undefined) => void)[]
-  >([]);
-  const setScrollViewNodeHandle = useCallback(
-    (nodeHandle: number | undefined) => {
-      _setScrollViewNodeHandle((prevNodeHandle) => {
-        if (prevNodeHandle === nodeHandle) return prevNodeHandle;
+  const [scrollView, setScrollView] = useState<ScrollView | ScrollableComponent<any, any> | undefined>();
 
-        nodeHandleChangeListenersRef.current.forEach((listener) => {
-          listener(nodeHandle);
-        });
-
-        return nodeHandle;
-      });
-    },
-    [nodeHandleChangeListenersRef]
-  );
   const setScrollViewRef = useCallback(
     (
       ref:
-        | React.RefObject<
-            ScrollView | ScrollableComponent<any, any> | undefined
-          >
+        | React.RefObject<ScrollView | ScrollableComponent<any, any> | undefined>
         | undefined
     ): void => {
       if (!ref?.current) {
         scrollViewRef.current = undefined;
-        setScrollViewNodeHandle(undefined);
+        setScrollView(undefined);
         return;
       }
 
-      const handle = findNodeHandle(ref.current);
-
-      if (handle) {
-        scrollViewRef.current = ref.current;
-        setScrollViewNodeHandle(handle);
-      } else {
-        console.warn(
-          "useFormValidationContext received bad scroll view ref: Ref must point to a native component"
-        );
-      }
+      scrollViewRef.current = ref.current;
+      setScrollView(ref.current);
     },
-    [setScrollViewNodeHandle]
+    []
   );
 
   const updateFieldOffsetY = useCallback(
@@ -327,10 +296,9 @@ export default function ValidatedForm(
         _internal_setScrollViewRef: setScrollViewRef,
         _internal_setExtraScrollHeight: setExtraScrollHeight,
         _internal_extraScrollHeight: extraScrollHeight,
-        _internal_scrollViewNodeHandle: scrollViewNodeHandle,
         _internal_scrollViewRef: scrollViewRef,
-        _internal_disableValidateFieldOnChange:
-          props.disableValidateFieldOnChange,
+        _internal_scrollView: scrollView,
+        _internal_disableValidateFieldOnChange: props.disableValidateFieldOnChange,
         state: validatorState,
       }}
     >

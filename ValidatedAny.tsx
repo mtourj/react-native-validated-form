@@ -34,7 +34,7 @@ function ValidatedAny<ValueT>(
     removeField,
     validateField,
     state,
-    _internal_scrollViewNodeHandle,
+    _internal_scrollView,
     _internal_disableValidateFieldOnChange,
   } = useContext(ValidatedFormContext);
 
@@ -43,45 +43,29 @@ function ValidatedAny<ValueT>(
 
   const childRef = useRef<View | null>(null);
 
-  /** For forwarding closure correctly */
   const propsRef = useRef<IValidatedAnyProps<ValueT>>(props);
   propsRef.current = props;
 
-  const scrollViewNodeHandleRef = useRef<number | undefined>(
-    _internal_scrollViewNodeHandle
-  );
-  scrollViewNodeHandleRef.current = _internal_scrollViewNodeHandle;
+  const scrollViewRef = useRef(_internal_scrollView);
+  scrollViewRef.current = _internal_scrollView;
 
   const measureYOffset = useCallback(
     () =>
       new Promise<number>((resolve) => {
-        // If we have the node handle for the form's scroll view, we can accurately
-        // measure the y-offset from the top of the page.
-        if (
-          scrollViewNodeHandleRef.current &&
-          childRef.current?.measureLayout
-        ) {
+        if (scrollViewRef.current && childRef.current) {
+          // Use native measureLayout API directly on the refs
           childRef.current.measureLayout(
-            scrollViewNodeHandleRef.current,
+            scrollViewRef.current as any,
             (x: number, y: number) => {
-              /** DEBUG */
-              // console.log(
-              //   `^ via measureLayout (${y}), handle: ${scrollViewNodeHandleRef.current}`,
-              // );
               resolve(y);
+            },
+            () => {
+              // On error, resolve with 0
+              resolve(0);
             }
           );
-        } else if (
-          scrollViewNodeHandleRef.current &&
-          !childRef.current?.measureLayout
-        ) {
-          console.warn(
-            "ValidatedAny onLayout: tried to measure child but could not find a method .measureLayout() on the component"
-          );
-          resolve(0);
         } else {
-          // Otherwise we just set it to 0
-          return resolve(0);
+          resolve(0);
         }
       }),
     []

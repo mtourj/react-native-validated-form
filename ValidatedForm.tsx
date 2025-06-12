@@ -65,7 +65,6 @@ export type FormContext = {
   readonly _internal_scrollViewRef:
     | React.RefObject<ScrollView | ScrollableComponent<any, any> | undefined>
     | undefined;
-  readonly _internal_scrollView: ScrollView | ScrollableComponent<any, any> | undefined;
   readonly _internal_disableValidateFieldOnChange: boolean | undefined;
 };
 
@@ -100,24 +99,25 @@ export default function ValidatedForm(
   }, [setValidatorState]);
 
   const scrollYRef = useRef<number | undefined>(undefined);
-  const scrollViewRef = useRef<ScrollView | ScrollableComponent<any, any> | undefined>(undefined);
+  const scrollViewRef = useRef<
+    ScrollView | ScrollableComponent<any, any> | undefined
+  >(undefined);
   const [extraScrollHeight, setExtraScrollHeight] = useState(0);
-  const [scrollView, setScrollView] = useState<ScrollView | ScrollableComponent<any, any> | undefined>();
 
   const setScrollViewRef = useCallback(
     (
       ref:
-        | React.RefObject<ScrollView | ScrollableComponent<any, any> | undefined>
+        | React.RefObject<
+            ScrollView | ScrollableComponent<any, any> | undefined
+          >
         | undefined
     ): void => {
       if (!ref?.current) {
         scrollViewRef.current = undefined;
-        setScrollView(undefined);
         return;
       }
 
       scrollViewRef.current = ref.current;
-      setScrollView(ref.current);
     },
     []
   );
@@ -297,8 +297,8 @@ export default function ValidatedForm(
         _internal_setExtraScrollHeight: setExtraScrollHeight,
         _internal_extraScrollHeight: extraScrollHeight,
         _internal_scrollViewRef: scrollViewRef,
-        _internal_scrollView: scrollView,
-        _internal_disableValidateFieldOnChange: props.disableValidateFieldOnChange,
+        _internal_disableValidateFieldOnChange:
+          props.disableValidateFieldOnChange,
         state: validatorState,
       }}
     >
@@ -354,27 +354,17 @@ export const useFormValidationContext = (
 
   const queueScrollToInvalidFields = useRef(false);
 
-  const mounted = useRef(false);
-
   useEffect(() => {
-    mounted.current = true;
-
-    return () => {
-      mounted.current = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (typeof extraScrollHeightHeight === "number" && mounted.current) {
+    if (typeof extraScrollHeightHeight === "number") {
       _internal_setExtraScrollHeight(extraScrollHeightHeight);
     }
   }, [extraScrollHeightHeight, _internal_setExtraScrollHeight]);
 
   /** This side effect handles updating scrollViewNodeHandle */
   useEffect(() => {
-    if (scrollViewRef?.current && mounted.current) {
+    if (scrollViewRef?.current) {
       _internal_setScrollViewRef(scrollViewRef);
-    } else if (mounted.current === false) {
+    } else {
       _internal_setScrollViewRef(undefined);
     }
   }, [scrollViewRef, _internal_setScrollViewRef]);

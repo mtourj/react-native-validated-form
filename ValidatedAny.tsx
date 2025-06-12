@@ -34,7 +34,7 @@ function ValidatedAny<ValueT>(
     removeField,
     validateField,
     state,
-    _internal_scrollView,
+    _internal_scrollViewRef,
     _internal_disableValidateFieldOnChange,
   } = useContext(ValidatedFormContext);
 
@@ -46,16 +46,13 @@ function ValidatedAny<ValueT>(
   const propsRef = useRef<IValidatedAnyProps<ValueT>>(props);
   propsRef.current = props;
 
-  const scrollViewRef = useRef(_internal_scrollView);
-  scrollViewRef.current = _internal_scrollView;
-
   const measureYOffset = useCallback(
     () =>
       new Promise<number>((resolve) => {
-        if (scrollViewRef.current && childRef.current) {
+        if (_internal_scrollViewRef?.current && childRef.current) {
           // Use native measureLayout API directly on the refs
           childRef.current.measureLayout(
-            scrollViewRef.current as any,
+            _internal_scrollViewRef.current as any,
             (x: number, y: number) => {
               resolve(y);
             },

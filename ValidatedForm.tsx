@@ -56,14 +56,18 @@ export type FormContext = {
   readonly validateForm: () => boolean;
   readonly _internal_setScrollViewRef: (
     ref:
-      | React.RefObject<ScrollView | ScrollableComponent<any, any> | undefined>
+      | React.RefObject<
+          ScrollView | ScrollableComponent<any, any> | undefined | null
+        >
       | undefined
   ) => void;
   readonly _internal_setExtraScrollHeight: (value: number) => void;
   readonly _internal_extraScrollHeight: number;
   readonly _internal_setScrollY: (value: number | undefined) => void;
   readonly _internal_scrollViewRef:
-    | React.RefObject<ScrollView | ScrollableComponent<any, any> | undefined>
+    | React.RefObject<
+        ScrollView | ScrollableComponent<any, any> | undefined | null
+      >
     | undefined;
   readonly _internal_disableValidateFieldOnChange: boolean | undefined;
 };
@@ -100,7 +104,7 @@ export default function ValidatedForm(
 
   const scrollYRef = useRef<number | undefined>(undefined);
   const scrollViewRef = useRef<
-    ScrollView | ScrollableComponent<any, any> | undefined
+    ScrollView | ScrollableComponent<any, any> | undefined | null
   >(undefined);
   const [extraScrollHeight, setExtraScrollHeight] = useState(0);
 
@@ -108,7 +112,7 @@ export default function ValidatedForm(
     (
       ref:
         | React.RefObject<
-            ScrollView | ScrollableComponent<any, any> | undefined
+            ScrollView | ScrollableComponent<any, any> | undefined | null
           >
         | undefined
     ): void => {
@@ -329,7 +333,7 @@ export const useFormValidationContext = (
    * will be disabled.
    */
   scrollViewRef?: React.RefObject<
-    ScrollView | ScrollableComponent<any, any> | undefined
+    ScrollView | ScrollableComponent<any, any> | undefined | null
   >,
   /** Default is `40` */
   extraScrollHeightHeight = 40

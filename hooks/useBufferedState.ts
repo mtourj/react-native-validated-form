@@ -4,7 +4,7 @@
  * state changes have been made for at least X milliseconds, and only then do we
  * actually update state and trigger a re-render */
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function useBufferedState<ValueT>(value: ValueT, delay = 50) {
   const [state, _setState] = useState<ValueT>(value);
@@ -34,6 +34,12 @@ export default function useBufferedState<ValueT>(value: ValueT, delay = 50) {
     },
     [commitStateFromBuffer]
   );
+
+  useEffect(function cleanup() {
+    return () => {
+      if (commitTimeoutRef.current) clearTimeout(commitTimeoutRef.current);
+    };
+  }, []);
 
   return [state, setState] as [ValueT, typeof setState];
 }

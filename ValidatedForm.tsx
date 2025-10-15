@@ -436,7 +436,7 @@ export const useValidatedFormAutoscroll = ({
     ScrollView | ScrollableComponent<any, any> | undefined | null
   >;
   /** Default is `40` */
-  extraScrollHeight: number;
+  extraScrollHeight?: number;
 }): UseValidatedFormAutoscrollReturns => {
   const _context = useContext(ctx);
 

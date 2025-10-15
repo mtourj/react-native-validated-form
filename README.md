@@ -26,12 +26,12 @@ yarn add @mtourj/react-native-validated-form
 For the auto-scrolling feature to work correctly, you **must**:
 
 1. Create a reference to your ScrollView
-2. Pass this reference to `useFormValidationContext`
-3. Set the `onScroll` prop on your ScrollView using the function returned from the context
+2. Use `useValidatedFormAutoscroll({ scrollViewRef })` to wire up scrolling (has to be called within a <ValidatedForm /> or withFormValidation HOC)
+3. Set the `onScroll` prop on your ScrollView using the function returned from the hook
 
 ```jsx
 const scrollViewRef = useRef();
-const { validateForm, onScroll } = useFormValidationContext(scrollViewRef);
+const { onScroll } = useValidatedFormAutoscroll({ scrollViewRef });
 
 return (
   <ScrollView
@@ -59,6 +59,7 @@ import {
   ValidatedAny,
   withFormValidation,
   useFormValidationContext,
+  useValidatedFormAutoscroll,
 } from '@mtourj/react-native-validated-form';
 
 function MyForm() {
@@ -66,7 +67,8 @@ function MyForm() {
   const [email, setEmail] = useState('');
   
   const scrollViewRef = useRef();
-  const { validateForm, onScroll } = useFormValidationContext(scrollViewRef);
+  const { validateForm } = useFormValidationContext();
+  const { onScroll } = useValidatedFormAutoscroll({ scrollViewRef });
   
   const handleSubmit = () => {
     if (validateForm()) {
@@ -203,9 +205,21 @@ const {
   validateForm, // Function to validate all fields, returns boolean
   scrollToInvalidFields, // Function to scroll to the first invalid field
   resetValidations, // Function to reset all validations
-  onScroll, // Event handler for ScrollView (Required for auto-scrolling)
   fields, // Object containing all field states
-} = useFormValidationContext(scrollViewRef);
+} = useFormValidationContext();
+```
+
+### useValidatedFormAutoscroll
+
+Wires your `ScrollView` to the form for auto-scrolling and correct field measurement after scrolling.
+
+```jsx
+const scrollViewRef = useRef();
+const { onScroll } = useValidatedFormAutoscroll({
+  scrollViewRef,
+  // Optional: adjust padding when scrolling to an invalid field (default 40)
+  extraScrollHeight: 40,
+});
 ```
 
 ## Advanced Usage
@@ -235,7 +249,8 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 function MyForm() {
   const scrollViewRef = useRef();
-  const { validateForm, onScroll } = useFormValidationContext(scrollViewRef);
+  const { validateForm } = useFormValidationContext();
+  const { onScroll } = useValidatedFormAutoscroll({ scrollViewRef });
   
   return (
     <KeyboardAwareScrollView
@@ -257,7 +272,8 @@ For complex forms with multiple sections or nested components:
 ```jsx
 function ParentForm() {
   const scrollViewRef = useRef();
-  const { validateForm, onScroll } = useFormValidationContext(scrollViewRef);
+  const { validateForm } = useFormValidationContext();
+  const { onScroll } = useValidatedFormAutoscroll({ scrollViewRef });
   
   return (
     <ScrollView 
@@ -327,7 +343,7 @@ Or for individual fields:
 2. **Field Dependencies**: When fields depend on each other, use a single `ValidatedAny` to wrap related fields
 3. **Error Styling**: Custom error styles can be applied through the `errorStyle` prop on `ValidatedTextInput` or globally with `setDefaultErrorStyle`
 4. **Dynamic Forms**: For dynamic fields (added/removed during runtime), ensure unique names are generated
-5. **ScrollView Setup**: Don't forget to set both the `ref` and `onScroll` props on your ScrollView
+5. **ScrollView Setup**: Don't forget to set both the `ref` and `onScroll` props on your ScrollView using `useValidatedFormAutoscroll`
 
 ## License
 

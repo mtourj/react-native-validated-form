@@ -320,24 +320,12 @@ export type UseFormValidationContextReturns = {
   validateForm: (scrollIfInvalid?: boolean) => boolean;
   /** Resets all fields to valid */
   resetValidations: () => void;
-  /** Use for dynamic forms. Makes sure correct y-offset measurement
-   * for fields added after scrolling */
-  onScroll: (e: ScrollEvent) => void;
   /** Returns all fields in form */
   fields: Partial<ValidatedFormFields>;
 };
 
 /** Hook for form validation actions */
-export const useFormValidationContext = (
-  /** Required for scrolling to invalid fields. If this is not provided, scrolling
-   * will be disabled.
-   */
-  scrollViewRef?: React.RefObject<
-    ScrollView | ScrollableComponent<any, any> | undefined | null
-  >,
-  /** Default is `40` */
-  extraScrollHeightHeight = 40
-): UseFormValidationContextReturns => {
+export const useFormValidationContext = (): UseFormValidationContextReturns => {
   const _context = useContext(ctx);
 
   if (!_context) {
@@ -349,29 +337,11 @@ export const useFormValidationContext = (
   const {
     state,
     validateForm: _validate,
-    _internal_setExtraScrollHeight,
     _internal_extraScrollHeight,
     _internal_scrollViewRef,
-    _internal_setScrollViewRef,
-    _internal_setScrollY,
   } = _context;
 
   const queueScrollToInvalidFields = useRef(false);
-
-  useEffect(() => {
-    if (typeof extraScrollHeightHeight === "number") {
-      _internal_setExtraScrollHeight(extraScrollHeightHeight);
-    }
-  }, [extraScrollHeightHeight, _internal_setExtraScrollHeight]);
-
-  /** This side effect handles updating scrollViewNodeHandle */
-  useEffect(() => {
-    if (scrollViewRef?.current) {
-      _internal_setScrollViewRef(scrollViewRef);
-    } else {
-      _internal_setScrollViewRef(undefined);
-    }
-  }, [scrollViewRef, _internal_setScrollViewRef]);
 
   /** Scrolls to invalid field with lowest y-offset value */
   const scrollToInvalidFields = useCallback(
@@ -441,6 +411,61 @@ export const useFormValidationContext = (
     return isValid;
   };
 
+  return {
+    scrollToInvalidFields,
+    validateForm,
+    resetValidations: _context.resetValidations,
+    fields: state.fields as Partial<ValidatedFormFields>,
+  };
+};
+
+type UseValidatedFormAutoscrollReturns = {
+  /** Use for dynamic forms. Makes sure correct y-offset measurement
+   * for fields added after scrolling */
+  onScroll: (e: ScrollEvent) => void;
+};
+
+export const useValidatedFormAutoscroll = ({
+  scrollViewRef,
+  extraScrollHeight = 40,
+}: {
+  /** Required for scrolling to invalid fields. If this is not provided, scrolling
+   * will be disabled.
+   */
+  scrollViewRef?: React.RefObject<
+    ScrollView | ScrollableComponent<any, any> | undefined | null
+  >;
+  /** Default is `40` */
+  extraScrollHeight: number;
+}): UseValidatedFormAutoscrollReturns => {
+  const _context = useContext(ctx);
+
+  if (!_context) {
+    throw new Error(
+      "[ValidatedForm] useValidatedFormAutoscroll hook was called but no context could be found. Make sure you are wrapping your component in withFormValidation or <ValidatedForm />"
+    );
+  }
+  const {
+    _internal_setExtraScrollHeight,
+    _internal_setScrollY,
+    _internal_setScrollViewRef,
+  } = _context;
+
+  useEffect(() => {
+    if (typeof extraScrollHeight === "number") {
+      _internal_setExtraScrollHeight(extraScrollHeight);
+    }
+  }, [extraScrollHeight, _internal_setExtraScrollHeight]);
+
+  /** This side effect handles updating scrollViewNodeHandle */
+  useEffect(() => {
+    if (scrollViewRef?.current) {
+      _internal_setScrollViewRef(scrollViewRef);
+    } else {
+      _internal_setScrollViewRef(undefined);
+    }
+  }, [scrollViewRef, _internal_setScrollViewRef]);
+
   const onScroll = useCallback(
     (e: ScrollEvent) => {
       const { contentOffset } = e.nativeEvent;
@@ -451,10 +476,6 @@ export const useFormValidationContext = (
   );
 
   return {
-    scrollToInvalidFields,
-    validateForm,
-    resetValidations: _context.resetValidations,
     onScroll,
-    fields: state.fields as Partial<ValidatedFormFields>,
   };
 };
